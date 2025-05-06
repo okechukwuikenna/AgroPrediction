@@ -3,9 +3,12 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# Load the pre-trained model
-model = pickle.load(open('loan_repayment_model.pkl', 'rb'))
-
+try:
+    model = pickle.load(open('loan_repayment_model.pkl', 'rb'))
+except FileNotFoundError:
+    st.error("Model file not found. Please upload 'loan_repayment_model.pkl' to your project directory.")
+    st.stop()
+    
 # Streamlit UI
 st.title('Farmer Loan Repayment Prediction')
 st.write("Please enter the details of the new farmer to predict loan repayment likelihood.")
