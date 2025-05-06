@@ -1,14 +1,10 @@
-
 import streamlit as st
 import pandas as pd
 import pickle
 
-try:
-    model = pickle.load(open('loan_repayment_model.pkl', 'rb'))
-except FileNotFoundError:
-    st.error("Model file not found. Please upload 'loan_repayment_model.pkl' to your project directory.")
-    st.stop()
-    
+# Load the pre-trained model
+model = pickle.load(open('loan_repayment_model.pkl', 'rb'))
+
 # Streamlit UI
 st.title('Farmer Loan Repayment Prediction')
 st.write("Please enter the details of the new farmer to predict loan repayment likelihood.")
@@ -45,11 +41,18 @@ new_farmer = pd.DataFrame([{
 
 # Process input data (encode categorical variables)
 new_encoded = pd.get_dummies(new_farmer)
+
+# Load the original training data to get column names for encoding
+# Assuming you have the original dataframe df
+df = pd.DataFrame(data)  # Replace with the actual dataset you used to train the model
+X = df.drop(['Farmer_ID', 'Repaid_On_Time'], axis=1)  # Adjust based on actual features
+
+# Ensure all columns are present in new_encoded
 missing_cols = set(X.columns) - set(new_encoded.columns)
 for col in missing_cols:
-    new_encoded[col] = 0  # Add missing columns as 0
+    new_encoded[col] = 0  # Add missing columns with value 0
 
-# Ensure column order matches training set
+# Ensure column order matches the training set
 new_encoded = new_encoded[X.columns]
 
 # Predict repayment likelihood
